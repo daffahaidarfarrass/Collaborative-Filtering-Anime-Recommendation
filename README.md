@@ -1,6 +1,8 @@
 # Laporan Proyek Machine Learning - Daffa Haidar Farras
 ## Project Overview
-Dalam beberapa tahun terakhir, pertumbuhan platform hiburan penyedia film dan anime daring seperti MyAnimeList, Netflix, dan Bsation telah meningkatkan permintaan terhadap sistem rekomendasi yang cerdas dan personal. Sistem ini dirancang untuk membantu pengguna menemukan konten baru berdasarkan preferensi mereka. Salah satu pendekatan populer dalam membangun sistem rekomendasi adalah Collaborative Filtering (CF), yang menggunakan pola interaksi pengguna dengan item (dalam konteks ini, anime) untuk memprediksi preferensi pengguna lain.
+  Seiring pertumbuhan eksponensial konten hiburan digital, seperti film dan anime, pengguna semakin kesulitan menemukan tayangan yang relevan dan sesuai minat. Platform seperti Netflix, Crunchyroll, dan MyAnimeList menghadapi tantangan besar dalam mengelola dan merekomendasikan ribuan judul kepada jutaan pengguna [1]. Oleh karena itu, pengembangan sistem rekomendasi cerdas menjadi sangat penting untuk meningkatkan pengalaman pengguna dan efisiensi dalam menjelajahi konten.<br><br>
+  Metode Collaborative Filtering (CF) telah menjadi pendekatan utama dalam sistem rekomendasi, yang memanfaatkan kesamaan antar pengguna atau item berdasarkan histori interaksi mereka. Meskipun efektif, CF klasik memiliki kelemahan seperti cold-start problem dan kesulitan menangani data spars [2]. Untuk mengatasi keterbatasan ini, pada projek ini menggunakan pendekatan seperti LightFM, yang melakukan collaborative filtering, serta Neural Collaborative Filtering (NCF), yang menggunakan jaringan saraf untuk memodelkan interaksi pengguna dan item secara lebih kompleks dan non-linear.
+
 ## Business Understanding
 ### Problem Statements
 - Bagaimana membangun sistem rekomendasi movie (anime) yang akurat dengan pendekatan klasik maupun modern untuk meningkatkan relevansi rekomendasi?
@@ -10,7 +12,7 @@ Dalam beberapa tahun terakhir, pertumbuhan platform hiburan penyedia film dan an
 - Mengukur performa kedua pendekatan menggunakan metrik evaluasi seperti Precision@K.
 ### Solution Statement
 - Sistem rekomendasi anime akan dibangun dengan dua pendekatan utama yaitu, LightFM (Collaborative Filtering klasik) dan Neural Collaborative Filtering (NCF) berbasis deep learning.
-- Evaluasi performa dilakukan dengan metrik Precision@K
+- Evaluasi performa dilakukan dengan metrik Precision@K dan Recall@K
 ## Data Understanding
 Kumpulan data ini berisi informasi tentang data preferensi pengguna dari 73,516 pengguna pada 12,294 anime. Dataset ini diambil dari platform [Kaggle](https://www.kaggle.com/datasets/CooperUnion/anime-recommendations-database) Dataset ini memiliki 2 file csv yaitu, anime.csv dan rating.csv
 Struktur file nya
@@ -292,4 +294,5 @@ Insight :
 2. Perbandingan antara ke-2 model ini menghasilkan model Neural Collaborative Filtering (NCF) yang unggul signifikan pada metriks top-k (Precision dan Recall). Meskipun model LightFM menunjukan nilai AUC yang tinggi (0.9120) yang membuktikan bahwa model dapat membedakan interaksi tetapi, performanya dalam menghasilkan rekomendasi Top-K sangat rendah (Precision@5 hanya 0.1702).
 
 ## Referensi
-1. 
+1. Mardhiyah, I., & Mukti, K. T. (2022). Sistem Rekomendasi Pembelian Lisensi Film Menggunakan Pendekatan Hybrid Filtering. Jurnal Riset Sistem Informasi dan Teknologi Informasi. https://jursistekni.nusaputra.ac.id/article/view/116
+2. Faisal, M., & Roziqiin, N. M. (2024). Sistem rekomendasi pemilihan anime menggunakan user-based collaborative filtering. JIPI. https://www.jurnal.stkippgritulungagung.ac.id/index.php/jipi/article/view/4222
