@@ -3,7 +3,7 @@
 Dalam beberapa tahun terakhir, pertumbuhan platform hiburan penyedia film dan anime daring seperti MyAnimeList, Netflix, dan Bsation telah meningkatkan permintaan terhadap sistem rekomendasi yang cerdas dan personal. Sistem ini dirancang untuk membantu pengguna menemukan konten baru berdasarkan preferensi mereka. Salah satu pendekatan populer dalam membangun sistem rekomendasi adalah Collaborative Filtering (CF), yang menggunakan pola interaksi pengguna dengan item (dalam konteks ini, anime) untuk memprediksi preferensi pengguna lain.
 ## Business Understanding
 ### Problem Statements
-- Bagaimana membangun sistem rekomendasi anime yang akurat dengan pendekatan klasik maupun modern untuk meningkatkan relevansi rekomendasi?
+- Bagaimana membangun sistem rekomendasi movie (anime) yang akurat dengan pendekatan klasik maupun modern untuk meningkatkan relevansi rekomendasi?
 - Bagaimana membandingkan performa antara algoritma CF klasik berbasis LightFM dan Neural Collaborative Filtering (NCF)?
 ### Goals
 - Mengimplementasikan dua model rekomendasi—LightFM Collaborative Filtering dan Neural Collaborative Filtering (NCF)—untuk memahami efisiensi dan efektivitas masing-masing.
@@ -35,12 +35,18 @@ Struktur file nya
 
 ### Memeriksa duplicate value
 
+![Cek Duplikat](https://github.com/user-attachments/assets/8bcfd72a-87ed-4fdd-9f75-50c42ea39526)
+
+
 
 Insight :
 - Untuk data_movie tidak ditemukan duplikat data
 - Tetapi, untuk data_rating terdapat 1 duplikat data
 
 ### Memeriksa Missing Value
+
+![Missing Value](https://github.com/user-attachments/assets/7340a1ff-f86a-46f5-b803-4a37e761b521)
+
 
 Insight :
 - Untuk data_movie ditemukan beberapa missing data
@@ -77,6 +83,8 @@ Insight :
 ## Univariate Analysis
 ### Distribusi Rating
 
+![Distribusi Rating](https://github.com/user-attachments/assets/9c36fb34-85f8-4dc0-be95-b4f5e4ae4492)
+
 
 Insight:
 - Rating 10 mendominasi sebagai nilai paling sering diberikan, diikuti oleh rating 9 dan 8.
@@ -86,11 +94,17 @@ Insight:
 ## Multivariate Analysis
 ### Movie/Anime Populer
 
+![Movie Populer](https://github.com/user-attachments/assets/4146a054-7074-4dce-b660-31a64e156074)
+
+
 
 Insight:
 - "Kimi no Na wa." dan "Ginga Eiyuu Densetsu" menempati posisi teratas dengan rating rata-rata di atas 8
 
 ### Genre Terpopuler
+
+![Genre Terpopuler](https://github.com/user-attachments/assets/b73cd8ab-40ac-41a6-b790-a68e789fe007)
+
 
 
 Insight:
@@ -98,8 +112,184 @@ Insight:
 - Genre seperti "Music", "Mecha", dan "Supernatural" memiliki jumlah yang lebih sedikit
 
 ## Data Preparation
+### Menangani Duplicat value
+
+![Menangani Duplikat](https://github.com/user-attachments/assets/ae96066d-95be-4999-82cd-161b9a759c05)
+
+
+Insight :
+- Untuk data_movie tidak ditemukan duplikat data
+- Tetapi, untuk data_rating terdapat 1 duplikat data
+- Sehingga, untuk data yang terduplikat yang ada pada data_rating saya menghapus barisnya
+
+### Menangani Missing Value
+
+![Menangani missing](https://github.com/user-attachments/assets/4f720760-e578-4630-89ae-0ccede6c1e36)
+
+Insight :
+- Untuk data_movie ditemukan beberapa missing data
+- Untuk data_rating tidak terdapat missing data
+- Sehingga, untuk data yang missing yang ada pada data_movie saya menghapus barisnya
+
+### Filter Data
+
+![Filter Data](https://github.com/user-attachments/assets/1936edbb-e3ac-449d-8d54-380b17f19e1e)
+
+
+Insight:
+- Hanya menggunakan data dari pengguna dan item yang aktif (diatas 100)
+- Supaya matriks interaksi menjadi lebih padat
+- Fokus pada film yang cukup sering dirating akan memberi insight yang lebih dapat diandalkan.
+
 ### Data Spliting
+
+
+![Splitting Data](https://github.com/user-attachments/assets/85965d85-195f-4637-8ec8-151a61ce718d)
+
+
+Insight:
+- Melakukan splitting data untuk data latih dan data uji
+
 ## Modeling
+Ada 2 algoritma yang digunakan untuk membuat model, yaitu sebagai berikut.
+### LIGHTFM
+#### Apa itu?
+LightFM adalah algoritma sistem rekomendasi yang menggabungkan dua pendekatan:
+- Collaborative Filtering (CF): mempelajari interaksi user-item.
+- Content-Based Filtering: dapat menggabungkan fitur dari user dan item.
+LightFM efektif digunakan untuk masalah implicit feedback (misalnya klik, like) maupun explicit feedback (seperti rating).
+#### Cara Kerja
+- Interaksi user-item dibuat dalam bentuk matriks sparse.
+- User dan item dipetakan ke dalam embedding/vektor laten.
+- Model menghitung skor relevansi antara user dan item menggunakan fungsi loss tertentu.
+- Embedding diperbarui untuk meminimalkan loss (seperti BPR atau WARP).
+#### Tahapan
+- Preprocessing khusus:
+  - Melakukan filter hanya interaksi dengan rating >= 8 dianggap positif (untuk train).
+  - dan untuk test rating >= 7
+- LightFM bekerja dengan matriks user-item sparse. build_interactions mengubah data rating menjadi matrix format yang efisien untuk pelatihan (CSR matrix). Proses ini dilakukan terpisah untuk training dan testing.
+- Hanya user dan item yang sudah ada di training yang digunakan di testing, untuk menghindari cold-start saat evaluasi.
+- Membangunan Model
+- Lalu, training
+#### Parameter yang Digunakan
+- `loss='warp'`: Menggunakan Weighted Approximate-Rank Pairwise, cocok untuk implicit feedback.
+- `random_state=42`: Untuk reprodusibilitas hasil.
+- `epochs=10`: Jumlah iterasi pelatihan.
+- `num_threads=4`: Jumlah thread paralel untuk mempercepat pelatihan.
+### Neural Collaborative Filtering (NCF)
+#### Apa itu?
+NCF adalah pendekatan sistem rekomendasi berbasis deep learning yang menggantikan perkalian dot product (seperti dalam matrix factorization) dengan arsitektur neural network, untuk menangkap hubungan non-linear antara user dan item.
+#### Cara Kerja
+- User dan item diubah menjadi ID numerik.
+- Masing-masing ID diubah menjadi vektor laten berdimensi tetap.
+- Vektor user dan item digabung.
+- Masuk ke fully-connected layers (dense).
+- Output berupa prediksi rating user terhadap item.
+#### Tahapan
+- Karena embedding layer hanya menerima input integer, `user_id` dan `movieId` harus dikonversi ke angka. Encoding ini memastikan setiap user/item memiliki ID unik numerik dari 0 hingga N-1.
+- Menambahkan kolom hasil encoding ke data yang nantinya digunakan sebagai input ke model NCF.
+- Membangun arsitektur model
+- Lalu, training model
+#### Parameter yang Digunakan
+- `Embedding dim=32`: Ukuran vektor representasi user/item.
+- `Dense(128, 64)`: Layer dense untuk mempelajari hubungan kompleks.
+- `activation='relu'`: Fungsi aktivasi untuk non-linearitas.
+- `loss='mse'`: Menggunakan Mean Squared Error karena ini kasus explicit feedback (rating).
+- `optimizer='adam'`: Optimizer yang adaptif dan umum digunakan.
+- `batch_size=1024`, `epochs=10`: Untuk proses training.
 ## Evaluation
+### Precision@k
+Precision@k mengukur proporsi item yang direkomendasikan (Top-k) yang benar-benar relevan untuk user.
+- Jika 3 dari 5 item yang direkomendasikan disukai user, maka Precision@5 = 3/5 = 0.6
+- Nilainya antara 0–1, makin tinggi makin bagus.
+
+![Precision@k](https://github.com/user-attachments/assets/5eadeff7-9b19-4141-b851-355ba75f5b55)
+
+
+
+### Recall@k
+Recall@k mengukur seberapa banyak item relevan yang berhasil ditemukan dari semua item relevan yang sebenarnya ada untuk user.
+- Jika user menyukai 10 item, dan 3 dari 10 muncul di Top-5, maka Recall@5 = 3/10 = 0.3
+- Mengukur kelengkapan rekomendasi.
+
+![Recall@k](https://github.com/user-attachments/assets/3a320bdd-0634-422e-b21d-179d58bd3dfd)
+
+
+
+### AUC Score
+AUC mengukur seberapa baik model membedakan antara item relevan (positif) dan tidak relevan (negatif).
+- Dengan menghitung kemungkinan item relevan mendapatkan skor lebih tinggi daripada item tidak relevan.
+- dan mencocokan untuk evaluasi ranking global, terutama untuk data implicit feedback.
+
+
+![AUC Score](https://github.com/user-attachments/assets/44418560-2583-4771-a8bd-86bc26999154)
+
+
+
+### MSE
+MSE mengukur seberapa jauh rata-rata kuadrat perbedaan antara prediksi rating dan rating aktual.
+- Memberikan Penalti lebih besar untuk prediksi yang sangat jauh dari nilai sebenarnya.
+- Lalu, digunakan untuk model regresi, seperti NCF.
+
+![Mean Squared Error](https://github.com/user-attachments/assets/cdb7553a-2495-4157-b423-420137c36fac)
+
+
+
+### MAE
+MAE menghitung rata-rata kesalahan absolut antara rating prediksi dan aktual.
+- Menilai Rata-rata kesalahan prediksi
+- Tidak memberi penalti besar pada outlier seperti MSE.
+
+![Mean Absolute Error](https://github.com/user-attachments/assets/6faf2209-3b0f-4935-bc40-b48f4affb4c7)
+
+## Hasil Evaluasi
+### LightFM
+
+![LightFM Evaluation](https://github.com/user-attachments/assets/212fb8d4-4a6a-44b9-97ab-2c9ac3b83703)
+
+
+
+Insight :
+- `Precision@5`:
+  - Artinya, rata-rata 17.02% dari 5 rekomendasi teratas yang diberikan kepada pengguna benar-benar relevan (dalam konteks: rating tinggi atau disukai user).
+- `AUC Score`:
+  - Area Under Curve (AUC) menunjukkan seberapa baik model membedakan item yang disukai dan tidak disukai user. Nilai mendekati 1.0 (maksimal) berarti:
+    - Model sangat baik dalam ranking item yang benar di atas item yang salah.
+    - Nilai 0.91 ini sangat bagus, artinya model punya kemampuan prediksi yang sangat baik.
+- `Recall@5`:
+  - Rata-rata hanya 2.28% dari total item relevan yang berhasil ditemukan di top-5.
+
+
+### Neural Collaborative Filtering (NCF)
+
+![NCF Evaluation](https://github.com/user-attachments/assets/f5bb4635-b78c-4d69-9355-e80eb828025d)
+
+
+Insight :
+- `Precision@5`:
+  - Artinya, rata-rata 79.98% dari 5 rekomendasi teratas yang diberikan kepada pengguna benar-benar relevan (dalam konteks: rating tinggi atau disukai user).
+- `Recall@5`:
+  - Rata-rata hanya 23.6% dari total item relevan yang berhasil ditemukan di top-5.
+- `MSE` :
+  - Metrik regresi, menunjukan bahwa pada model ini memiliki nilai sebesar 3.8266 pada matrix pengukuran ini semakin rendah, semakin baik.
+- `MAE` :
+ - Nilai MAE yang menunjukan Rata-rata selisih prediksi terhadap rating aktual. Pada model ini memiliki nilai sebesar 1.1885
+
+## Contoh Hasil Rekomendasi
+### LightFM
+
+![Contoh Hasil Rekomendasi LightFM](https://github.com/user-attachments/assets/11e8801a-6b99-4462-ae36-e287a8dc9eb9)
+
+
+### Neural Collaborative Filtering (NCF)
+
+
+![Contoh Hasil Rekomendasi NCF](https://github.com/user-attachments/assets/e22ddaf9-97af-4b8e-b25c-4a98b88482a8)
+
+
 ## Kesimpulan
+1. Berdasarkan kedua pendekatan yang sudah dilakukan yaitu dengan menggunakan model LightFM dan Neural Collaborative Filtering (NCF) menunjukan bahwa Neural Collaborative Filtering (NCF) dapat memberikan rekomendasi yang lebih relevan dibandingkan dengan model LightFM. Hal ini ditunjukan oleh hasil evaluasi yang menunjukan Precision@5 NCF yang tinggi (0.7998) jika dibandingkan dengan LightFM yang hanya memiliki Presicion@5 sebesar 0.1702.
+2. Perbandingan antara ke-2 model ini menghasilkan model Neural Collaborative Filtering (NCF) yang unggul signifikan pada metriks top-k (Precision dan Recall). Meskipun model LightFM menunjukan nilai AUC yang tinggi (0.9120) yang membuktikan bahwa model dapat membedakan interaksi tetapi, performanya dalam menghasilkan rekomendasi Top-K sangat rendah (Precision@5 hanya 0.1702).
+
 ## Referensi
+1. 
