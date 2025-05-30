@@ -275,7 +275,7 @@ Insight :
 - `MSE` :
   - Metrik regresi, menunjukan bahwa pada model ini memiliki nilai sebesar 3.8266 pada matrix pengukuran ini semakin rendah, semakin baik.
 - `MAE` :
- - Nilai MAE yang menunjukan Rata-rata selisih prediksi terhadap rating aktual. Pada model ini memiliki nilai sebesar 1.1885
+  - Nilai MAE yang menunjukan Rata-rata selisih prediksi terhadap rating aktual. Pada model ini memiliki nilai sebesar 1.1885
 
 ## Contoh Hasil Rekomendasi
 ### LightFM
