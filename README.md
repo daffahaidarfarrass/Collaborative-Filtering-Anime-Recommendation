@@ -32,7 +32,7 @@ Struktur file nya
 
 |Jumlah Baris|Jumlah Kolom|
 |---|---|
-|12.294|8|
+|12.294|7|
 
 
 - rating.csv
@@ -47,7 +47,7 @@ Struktur file nya
 
 |Jumlah Baris|Jumlah Kolom|
 |---|---|
-|7.813.737|4|
+|7.813.737|3|
 
 ### Data Unique untuk `anime_id` dan `user_id`
 - Terdapat 12,294 data unik di kolom `anime_id`
@@ -212,7 +212,8 @@ LightFM efektif digunakan untuk masalah implicit feedback (misalnya klik, like) 
 - `num_threads=4`: Jumlah thread paralel untuk mempercepat pelatihan.
 #### Output Top-N Rekomendasi
 
-![Contoh Hasil Prediksi LightFM](https://github.com/user-attachments/assets/265249d8-4e90-478b-bf42-ffb38f65da25)
+![Contoh Hasil Prediksi LightFM](https://github.com/user-attachments/assets/879fd895-c8eb-465f-865d-e9f516ed47cc)
+
 
 
 ### Neural Collaborative Filtering (NCF)
@@ -238,7 +239,7 @@ NCF adalah pendekatan sistem rekomendasi berbasis deep learning yang menggantika
 - `batch_size=1024`, `epochs=10`: Untuk proses training.
 #### Output Top-N Rekomendasi
 
-![Contoh Hasil Prediksi NCF](https://github.com/user-attachments/assets/487dba5b-4752-4f6a-a56f-00c60c20a9c0)
+![Contoh Hasil Prediksi NCF](https://github.com/user-attachments/assets/ffb14ff1-6173-433d-a610-74fa360a6911)
 
 
 ## Evaluation
@@ -289,41 +290,43 @@ MAE menghitung rata-rata kesalahan absolut antara rating prediksi dan aktual.
 ## Hasil Evaluasi
 ### LightFM
 
-![LightFM Evaluation](https://github.com/user-attachments/assets/350968c8-7136-4a65-8ef4-b37c05bc3c6e)
+![LightFM Evaluation](https://github.com/user-attachments/assets/a1e7fb9e-76af-40a3-8877-f603233134a2)
 
 
 Insight :
+Insight :
 - `Precision@5`:
-  - Artinya, rata-rata 17.02% dari 5 rekomendasi teratas yang diberikan kepada pengguna benar-benar relevan (dalam konteks: rating tinggi atau disukai user).
+  - Artinya, rata-rata 17.21% dari 5 rekomendasi teratas yang diberikan kepada pengguna benar-benar relevan (dalam konteks: rating tinggi atau disukai user).
 - `AUC Score`:
   - Area Under Curve (AUC) menunjukkan seberapa baik model membedakan item yang disukai dan tidak disukai user. Nilai mendekati 1.0 (maksimal) berarti:
     - Model sangat baik dalam ranking item yang benar di atas item yang salah.
     - Nilai 0.91 ini sangat bagus, artinya model punya kemampuan prediksi yang sangat baik.
 - `Recall@5`:
-  - Rata-rata hanya 2.28% dari total item relevan yang berhasil ditemukan di top-5.
+  - Rata-rata hanya 2.3% dari total item relevan yang berhasil ditemukan di top-5.
 
 
 ### Neural Collaborative Filtering (NCF)
 
 
-![NCF Evaluation](https://github.com/user-attachments/assets/5e41e80d-5f2a-415a-a80b-b61e738c17c4)
+![NCF Evaluation](https://github.com/user-attachments/assets/88d832d6-439b-42cd-be60-c44db9ce38a3)
 
 
-Insight :
+
 Insight :
 - `Precision@5`:
-  - Artinya, rata-rata 79.98% dari 5 rekomendasi teratas yang diberikan kepada pengguna benar-benar relevan (dalam konteks: rating tinggi atau disukai user).
+  - Artinya, rata-rata 79.83% dari 5 rekomendasi teratas yang diberikan kepada pengguna benar-benar relevan (dalam konteks: rating tinggi atau disukai user).
 - `Recall@5`:
-  - Rata-rata hanya 23.6% dari total item relevan yang berhasil ditemukan di top-5.
+  - Rata-rata hanya 23.5% dari total item relevan yang berhasil ditemukan di top-5.
 - `MSE` :
-  - 3.8266 ini menunjukan bahwa model tidak menghasilkan kesalahan besar pada sebagian besar data
+  - 3.8368 ini menunjukan bahwa model tidak menghasilkan kesalahan besar pada sebagian besar data
 - `MAE` :
-  - 1.1885 ini menunjukan model sudah cukup baik, tetapi model masih bisa ditingkatkan untuk bisa mendapatkan presisi yang lebih baik
+ - 1.2 ini menunjukan model sudah cukup baik, tetapi model masih bisa ditingkatkan untuk bisa mendapatkan presisi yang lebih baik
+
 
 
 ## Kesimpulan
-1. Berdasarkan kedua pendekatan yang sudah dilakukan yaitu dengan menggunakan model LightFM dan Neural Collaborative Filtering (NCF) menunjukan bahwa Neural Collaborative Filtering (NCF) dapat memberikan rekomendasi yang lebih relevan dibandingkan dengan model LightFM. Hal ini ditunjukan oleh hasil evaluasi yang menunjukan Precision@5 NCF yang tinggi (0.7998) jika dibandingkan dengan LightFM yang hanya memiliki Presicion@5 sebesar 0.1702.
-2. Perbandingan antara ke-2 model ini menghasilkan model Neural Collaborative Filtering (NCF) yang unggul signifikan pada metriks top-k (Precision dan Recall). Meskipun model LightFM menunjukan nilai AUC yang tinggi (0.9120) yang membuktikan bahwa model dapat membedakan interaksi tetapi, performanya dalam menghasilkan rekomendasi Top-K sangat rendah (Precision@5 hanya 0.1702).
+1. Berdasarkan kedua pendekatan yang sudah dilakukan yaitu dengan menggunakan model LightFM dan Neural Collaborative Filtering (NCF) menunjukan bahwa Neural Collaborative Filtering (NCF) dapat memberikan rekomendasi yang lebih relevan dibandingkan dengan model LightFM. Hal ini ditunjukan oleh hasil evaluasi yang menunjukan Precision@5 NCF yang tinggi (0.7983) jika dibandingkan dengan LightFM yang hanya memiliki Presicion@5 sebesar 0.1721.
+2. Perbandingan antara ke-2 model ini menghasilkan model Neural Collaborative Filtering (NCF) yang unggul signifikan pada metriks top-k (Precision dan Recall). Meskipun model LightFM menunjukan nilai AUC yang tinggi (0.9134) yang membuktikan bahwa model dapat membedakan interaksi tetapi, performanya dalam menghasilkan rekomendasi Top-K sangat rendah (Precision@5 hanya 0.1721).
 
 ## Referensi
 1. Mardhiyah, I., & Mukti, K. T. (2022). Sistem Rekomendasi Pembelian Lisensi Film Menggunakan Pendekatan Hybrid Filtering. Jurnal Riset Sistem Informasi dan Teknologi Informasi. https://jursistekni.nusaputra.ac.id/article/view/116
