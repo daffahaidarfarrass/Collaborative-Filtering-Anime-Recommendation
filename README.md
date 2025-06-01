@@ -27,6 +27,14 @@ Struktur file nya
 |episodes | how many episodes in this show. (1 if movie).|
 |rating | average rating out of 10 for this anime.|
 |members | number of community members that are in this anime's "group".|
+
+- Pada **anime.csv** ini memiliki
+
+|Jumlah Baris|Jumlah Kolom|
+|---|---|
+|12.294|8|
+
+
 - rating.csv
 
 | Kolom | Deskripsi |
@@ -34,6 +42,18 @@ Struktur file nya
 |user_id | non identifiable randomly generated user id. |
 |anime_id | the anime that this user has rated. |
 |rating | rating out of 10 this user has assigned (-1 if the user watched it but didn't assign a rating). |
+
+ - Pada **rating.csv** ini memiliki
+
+|Jumlah Baris|Jumlah Kolom|
+|---|---|
+|7.813.737|4|
+
+### Data Unique untuk `anime_id` dan `user_id`
+- Terdapat 12,294 data unik di kolom `anime_id`
+- Terdapat 73,515 data unik di kolom `user_id`
+
+
 
 ### Memeriksa duplicate value
 
@@ -80,7 +100,6 @@ Insight :
 |50%	|10260.500000	|6.570000	|1.550000e+03	|10260.500000|
 |75%	|24794.500000	|7.180000	|9.437000e+03	|24794.500000|
 |max	|34527.000000	|10.000000	|1.013917e+06	|34527.000000|
-
 
 ## Univariate Analysis
 ### Distribusi Rating
@@ -152,7 +171,20 @@ Insight:
 Insight:
 - Melakukan splitting data untuk data latih dan data uji
 
-## Modeling
+### Mapping dan Encoding
+
+![mapping](https://github.com/user-attachments/assets/97fc4978-dc7a-4bbc-b872-34757e0d91fc)
+
+- Membuat objek `Dataset` dan memetakan `ID user` dan `item` yang akan digunakan untuk melatih model LightFM
+- Membuat reverse mapping dari index ke ID asli
+- Membuat dictionary untuk mengubah `movieId` ke judul `film` (name)
+#### Encoding ID menjadi angka
+
+![Encoding ID](https://github.com/user-attachments/assets/5b996b6a-f6a2-482f-99bf-90bf30d83a23)
+
+- Tahapan ini penting yang nantinya akan digunakan untuk membangun model NCF
+
+## Modeling dan Result
 Ada 2 algoritma yang digunakan untuk membuat model, yaitu sebagai berikut.
 ### LIGHTFM
 #### Apa itu?
@@ -178,6 +210,11 @@ LightFM efektif digunakan untuk masalah implicit feedback (misalnya klik, like) 
 - `random_state=42`: Untuk reprodusibilitas hasil.
 - `epochs=10`: Jumlah iterasi pelatihan.
 - `num_threads=4`: Jumlah thread paralel untuk mempercepat pelatihan.
+#### Output Top-N Rekomendasi
+
+![Contoh Hasil Prediksi LightFM](https://github.com/user-attachments/assets/265249d8-4e90-478b-bf42-ffb38f65da25)
+
+
 ### Neural Collaborative Filtering (NCF)
 #### Apa itu?
 NCF adalah pendekatan sistem rekomendasi berbasis deep learning yang menggantikan perkalian dot product (seperti dalam matrix factorization) dengan arsitektur neural network, untuk menangkap hubungan non-linear antara user dan item.
@@ -199,6 +236,11 @@ NCF adalah pendekatan sistem rekomendasi berbasis deep learning yang menggantika
 - `loss='mse'`: Menggunakan Mean Squared Error karena ini kasus explicit feedback (rating).
 - `optimizer='adam'`: Optimizer yang adaptif dan umum digunakan.
 - `batch_size=1024`, `epochs=10`: Untuk proses training.
+#### Output Top-N Rekomendasi
+
+![Contoh Hasil Prediksi NCF](https://github.com/user-attachments/assets/487dba5b-4752-4f6a-a56f-00c60c20a9c0)
+
+
 ## Evaluation
 ### Precision@k
 Precision@k mengukur proporsi item yang direkomendasikan (Top-k) yang benar-benar relevan untuk user.
@@ -247,8 +289,7 @@ MAE menghitung rata-rata kesalahan absolut antara rating prediksi dan aktual.
 ## Hasil Evaluasi
 ### LightFM
 
-![LightFM Evaluation](https://github.com/user-attachments/assets/212fb8d4-4a6a-44b9-97ab-2c9ac3b83703)
-
+![LightFM Evaluation](https://github.com/user-attachments/assets/350968c8-7136-4a65-8ef4-b37c05bc3c6e)
 
 
 Insight :
@@ -264,29 +305,20 @@ Insight :
 
 ### Neural Collaborative Filtering (NCF)
 
-![NCF Evaluation](https://github.com/user-attachments/assets/f5bb4635-b78c-4d69-9355-e80eb828025d)
+
+![NCF Evaluation](https://github.com/user-attachments/assets/5e41e80d-5f2a-415a-a80b-b61e738c17c4)
 
 
+Insight :
 Insight :
 - `Precision@5`:
   - Artinya, rata-rata 79.98% dari 5 rekomendasi teratas yang diberikan kepada pengguna benar-benar relevan (dalam konteks: rating tinggi atau disukai user).
 - `Recall@5`:
   - Rata-rata hanya 23.6% dari total item relevan yang berhasil ditemukan di top-5.
 - `MSE` :
-  - Metrik regresi, menunjukan bahwa pada model ini memiliki nilai sebesar 3.8266 pada matrix pengukuran ini semakin rendah, semakin baik.
+  - 3.8266 ini menunjukan bahwa model tidak menghasilkan kesalahan besar pada sebagian besar data
 - `MAE` :
-  - Nilai MAE yang menunjukan Rata-rata selisih prediksi terhadap rating aktual. Pada model ini memiliki nilai sebesar 1.1885
-
-## Contoh Hasil Rekomendasi
-### LightFM
-
-![Contoh Hasil Rekomendasi LightFM](https://github.com/user-attachments/assets/11e8801a-6b99-4462-ae36-e287a8dc9eb9)
-
-
-### Neural Collaborative Filtering (NCF)
-
-
-![Contoh Hasil Rekomendasi NCF](https://github.com/user-attachments/assets/e22ddaf9-97af-4b8e-b25c-4a98b88482a8)
+  - 1.1885 ini menunjukan model sudah cukup baik, tetapi model masih bisa ditingkatkan untuk bisa mendapatkan presisi yang lebih baik
 
 
 ## Kesimpulan
