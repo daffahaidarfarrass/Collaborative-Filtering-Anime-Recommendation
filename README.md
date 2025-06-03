@@ -178,11 +178,60 @@ Insight:
 - Membuat objek `Dataset` dan memetakan `ID user` dan `item` yang akan digunakan untuk melatih model LightFM
 - Membuat reverse mapping dari index ke ID asli
 - Membuat dictionary untuk mengubah `movieId` ke judul `film` (name)
-#### Encoding ID menjadi angka
+
+
+
+
+### Pre-processing khusus
+#### LightFM
+##### Data interaksi pengguna-item
+
+![interaction LightFM](https://github.com/user-attachments/assets/cecfb90c-af85-428d-bb06-54d79332cd31)
+
+
+Insight : 
+
+1. Membuat Data Interaksi untuk Train Data
+- Membangun matriks interaksi `interactions_train` dari `train_df`
+- Hanya interaksi dengan rating ≥ 8 dianggap sebagai positif (1.0), sisanya dianggap negatif (0.0).
+
+2. Menyaring Data Test Berdasarkan Pengguna dan Item yang Valid
+- Menghapus baris dari `test_df` yang mengandung user atau item yang tidak muncul di `train_df` untuk menghindari cold-start users/items
+
+3. Membuat Data Interaksi untuk Test Data
+- Membangun matriks interaksi interactions_test dari `test_df`.
+- Menggunakan threshold rating ≥ 7 untuk dianggap positif.
+
+#### NCF
+##### Fit LabelEncoder
 
 ![Encoding ID](https://github.com/user-attachments/assets/5b996b6a-f6a2-482f-99bf-90bf30d83a23)
 
+Insight :
 - Tahapan ini penting yang nantinya akan digunakan untuk membangun model NCF
+
+
+##### Transformasi Train & Test
+
+![Transformasi Train   Test](https://github.com/user-attachments/assets/b4eae166-9d7f-45f9-a168-85fa59fae59c)
+
+
+Insight:
+- Mengubah user_id dan anime_id menjadi bentuk integer yang bisa diproses model.
+- Menghitung jumlah user/item unik berdasarkan hasil encoding.
+- Mengasumsikan bahwa user_enc dan item_enc sudah dilatih sebelumnya.
+
+
+##### Mempersiapkan Input untuk Training dan Testing
+
+![Mempersiapkan Input untuk Training dan Testing](https://github.com/user-attachments/assets/6bbd4914-bd3f-4877-a4fc-27d28cb17d97)
+
+
+Insight:
+- Menyusun array numpy dari fitur (`user_id_enc`, `item_enc`) dan label (`rating`) untuk model.
+
+
+
 
 ## Modeling dan Result
 Ada 2 algoritma yang digunakan untuk membuat model, yaitu sebagai berikut.
